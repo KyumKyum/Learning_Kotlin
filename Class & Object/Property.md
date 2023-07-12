@@ -1,4 +1,4 @@
-# Class
+# Property
 
 Kotlin의 Class의 Property 대한 설명을 정리 해놓았습니다. 공식 문서를 참고하였습니다.
 
