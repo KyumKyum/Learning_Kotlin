@@ -5,3 +5,4 @@
 - [Class](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Class.md)
 - [Inheritance](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Inheritance.md)
 - [Property](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Property.md)
+- [Interface](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Interface.md)
