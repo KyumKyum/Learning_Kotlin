@@ -8,3 +8,4 @@
 - [Interface](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Interface.md)
 - [Visibility Modifiers](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Visibility%20Modifiers.md)
 - [Extensions](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Extensions.md)
+- [Data Classes](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Data%20Classes.md)
