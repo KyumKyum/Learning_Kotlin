@@ -1,7 +1,8 @@
 # Generics
 
 Kotlin의 Generics에 대한 설명을 정리 해놓았습니다. 공식 문서를 참고하였습니다.
-Generic은 OOP에서 매우 중요한 개념이지만, 난이도가 하드코어하니 정신 바짝 차리자구여!
+Generic은 OOP에서 매우 중요한 개념이지만, 난이도가 하드코어하니 정신 바짝 차리자!
+나 또한 계속 업데이트 할 것이고, 아직 inline function의 `reified` keyword를 완전히 이해하지 못해, 본 내용도 80%만 정리가 되어 있는 상태이다. 꾸준히 공부하고 업데이트를 해야겠다.
 
 ## What is generic?
 
@@ -336,7 +337,104 @@ Generic Type은 여러 개가 사용될 수 있고, Projection 역시 각각에�
 > `F<Int, *>` == `F<Int, out Any?>`  
 > `F<*, *>` == `F<in Nothing, out Any?>`
 
-##TODO
+##Generic Functions
+당연한 이야기이지만, Generic은 class 뿐만이 아니라 function에도 사용이 된다.
+
+```kotlin
+fun <T> singletonList(item: T): List<T> {
+    // ...
+}
+
+val l = singletonList<Int>(1)
+
+// Context만으로 type inference가 가능할 경우, Type Argument는 생략이 가능하다.
+val l = singletonList(1)
+```
+
+Extension Function 역시 다음과 같이 Generic을 적용할 수 있다.
+
+```kotlin
+fun <T> T.basicToString(): String { // extension function
+    // ...
+}
+```
+
+## Upper Bound and `where`
+
+다음과 같은 Generic이 있다고 가정을 해보자.
+
+```kotlin
+fun <T> onlyEven(list: T){
+  return list.filter{it % 2 == 0} //!!! Error: Unresolved reference: filter
+}
+```
+
+위와 같은 코드는 컴파일 에러가 발생한다. Compiler 입장에서는 list에 어떤 type이 올 줄 알지 못하고, 해당 type에 filter가 가능할 지에 대해서는 더더욱 알지 못한다.
+
+여기서 UpperBound가 필요하다. 즉, 올 수 있는 Generic에 제한을 걸어주는 것이다.
+
+```kotlin
+fun <T: Comparable<T>> onlyEven(list: T){
+  return list.filter{it % 2 == 0} //!!! Error: Unresolved reference: filter
+}
+```
+
+저 `T: TUpper`와 같은 형식에서의 `TUpper`는 Upper bound이다. 즉, `T`의 위치에는 `T`, 혹은 `T`를 상속하는 subtype/subclass가 와야 한다.
+
+```kotlin
+fun <T : Comparable<T>> sort(list: List<T>) {  ... }
+
+sort(listOf(1, 2, 3)) // OK. Int is a subtype of Comparable<Int>
+sort(listOf(HashMap<Int, String>())) // Error: HashMap<Int, String> is not a subtype of Comparable<HashMap<Int, String>>
+```
+
+Upper Bound가 존재하지 않을 때 Default Upper Bound는 `Any?`이다.
+
+가끔, 여러 개의 제한이 필요한 경우가 있다. 여러 개의 제한 모두를 Implement했을 경우에만 허용을 하도록 하는 제한이 필요할 수도 있다. 이런 경우에 필요한 keyword가 바로 `where`이다.
+
+> 💫 `where`는 Type Parameter에 대한 두 개 이상의 Upper Bound가 필요할 때 사용된다. where의 조건을 모두 만족한 type만 허용을 시켜준다.
+
+```kotlin
+fun <T> copyWhenGreater(list: List<T>, threshold: T): List<String>
+    where T : CharSequence,
+          T : Comparable<T> {
+    return list.filter { it > threshold }.map { it.toString() }
+}
+```
+
+위의 예시에서 `T`는 `CharSequence` 와 `Comparable`모두를 implement한 type만이 올 수 있다.
+
+## Type Erasure
+
+Generic은 compile time에 type을 정하고 컴파일을 진행한다. 하지만 run time에는 generic type은 이러한 정보를 모두 지운다. `Foo<Bar>`, `Foo<Baz?` => `Foo<*>`와 같은 상태가 된다.
+이와 같은 이유로 runtime에 type을 확인하는 `is`연산자는 제한된다.
+
+```kotlin
+ints is List<Int> //(X)
+list is T //(X)
+```
+
+다만 Star Projection으로 바꾸는 Type Erasure의 특성 때문에 다음과 같은 코드는 컴파일이 된다.
+
+```kotlin
+if (something is List<*>) {
+    something.forEach { println(it) } // The items are typed as `Any?`
+}
+```
+
+또한, 다음과 같이 Generic임에도 불구하고, 실제 Generic을 사용하지 않고 type을 check하는 경우 또한 컴파일이 된다.
+
+```kotlin
+fun handleStrings(list: MutableList<String>) {
+    if (list is ArrayList) {// Check without type argument
+        // `list` is smart-cast to `ArrayList<String>`
+    }
+}
+```
+
+## Underscore operator
+
+최근에 생긴 `_` operator 또한 type argument에 에서 사용할 수 있다. 2개 이상의 type argument가 필요한 Generic중 하나를 명시적으로 넣고, 다른 하나에 `_`를 넣으면 `_`에 대해서는 type inferrence가 진행된다!
 
 ###### Reference
 
@@ -344,3 +442,4 @@ Generic Type은 여러 개가 사용될 수 있고, Projection 역시 각각에�
 [코틀린 제네릭, in? out?](https://medium.com/mj-studio/%EC%BD%94%ED%8B%80%EB%A6%B0-%EC%A0%9C%EB%84%A4%EB%A6%AD-in-out-3b809869610e)
 [[Java] Java 제네릭의 형 변환(covariant & contravariant)](https://sabarada.tistory.com/124)
 [Generic - Invariance, Covariance, Contravariance](https://www.myanglog.com/Generic%20-%20%20Invariance,%20Covariance,%20Contravariance)
+[[Kotlin] 한 방에 정리하는 코틀린 제네릭(kotlin generic) - in, out, where, reified](https://readystory.tistory.com/201)
