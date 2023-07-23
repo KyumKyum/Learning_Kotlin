@@ -10,3 +10,4 @@
 - [Extensions](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Extensions.md)
 - [Data Classes](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Data%20Classes.md)
 - [Sealed Classes](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Sealed%20Classes.md)
+- [Generics](https://github.com/KyumKyum/Learning_Kotlin/tree/main/Class%20%26%20Object/Generics.md)
